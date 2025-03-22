@@ -1,0 +1,66 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint System</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="main-wrapper">
+        <!-- Complaint Section -->
+        <div class="container mt-5">
+            <h3 class="text-center">Submit a Complaint</h3>
+            <div class="card p-3">
+                <textarea id="complaintText" class="form-control" placeholder="Enter your complaint..." rows="4"></textarea>
+                <button class="btn btn-danger mt-3" onclick="submitComplaint()">Submit Complaint</button>
+            </div>
+        </div>
+    </div>
+
+    <script> // js/complaint.js
+
+        // Function to submit complaint
+        function submitComplaint() {
+            let complaintText = document.getElementById("complaintText").value;
+            if (!complaintText.trim()) {
+                alert("Please enter a complaint!");
+                return;
+            }
+        
+            let complaints = JSON.parse(localStorage.getItem("complaints")) || [];
+            complaints.push(complaintText);
+            localStorage.setItem("complaints", JSON.stringify(complaints));
+        
+            alert("Complaint submitted successfully!");
+            document.getElementById("complaintText").value = "";
+        }
+        
+        // Function to display complaints on the admin page
+        function displayComplaints() {
+            let complaintList = document.getElementById("complaintList");
+            let complaints = JSON.parse(localStorage.getItem("complaints")) || [];
+        
+            complaintList.innerHTML = "";
+            complaints.forEach((complaint, index) => {
+                let listItem = document.createElement("li");
+                listItem.textContent = `${index + 1}. ${complaint}`;
+                listItem.classList.add("list-group-item");
+                complaintList.appendChild(listItem);
+            });
+        }
+        
+        // Function to clear complaints
+        function clearComplaints() {
+            localStorage.removeItem("complaints");
+            displayComplaints();
+        }
+        
+        // Call displayComplaints only if on the admin page
+        if (document.getElementById("complaintList")) {
+            displayComplaints();
+        }
+        </script>
+</body>
+</html>

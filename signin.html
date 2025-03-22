@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="authentication">
+            <div class="container">
+                <div class="row justify-content-center align-items-center">
+                    <div class="col-12 col-lg-8 col-xl-5">
+                        <div class="auth-form card">
+                            <div class="card-header text-center">
+                                <h4 class="card-title">Login</h4>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label>Unique ID</label>
+                                        <input type="text" class="form-control" id="uniqueID" placeholder="Enter Unique ID">
+                                    </div>
+                                    <div class="text-center mt-4">
+                                        <button type="button" class="btn btn-primary w-100" onclick="loginUser()">Login with MetaMask</button>
+                                    </div>
+                                    <p id="loginMessage" style="color: red; display: none;">❌ Login failed. Check your Unique ID.</p>
+                                </form>
+                            </div>
+                        </div>
+                        <p class="text-center mt-3">Don't have an account? <a href="signup.html">Sign Up</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="signin.js"></script>
+</body>
+</html>
