@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  ganache:
+    image: trufflesuite/ganache-cli:latest
+    command: --accounts 10 --defaultBalanceEther 100
+    ports:
+      - "8545:8545"
+    networks:
+      - chaotic-net
+
+  hardhat:
+    build: ./hardhat
+    working_dir: /usr/src/app
+    volumes:
+      - ./hardhat:/usr/src/app
+      - ./contracts:/usr/src/app/contracts
+    command: sh -c "npm install && npx hardhat node --hostname 0.0.0.0 --port 8546"
+    ports:
+      - "8546:8546"
+    networks:
+      - chaotic-net
+
+  ipfs:
+    image: ipfs/go-ipfs:latest
+    ports:
+      - "5001:5001"
+      - "8080:8080"
+    networks:
+      - chaotic-net
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      - RPC_URL=http://ganache:8545
+      - CONTRACT_ADDRESS=
+      - GATEWAY_PRIVATE_KEY=
+      - AUDITOR_PUBLIC_KEY=
+      - GATEWAY_SECRET=gateway-test-secret
+    ports:
+      - "3000:3000"
+    depends_on:
+      - ganache
+      - ipfs
+    networks:
+      - chaotic-net
+
+networks:
+  chaotic-net:
+    driver: bridge
