@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaotic ECC Simulation Examples</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        .example-card { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .example-title { color: #495057; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+        .field-group { margin: 15px 0; }
+        .field-label { font-weight: bold; color: #6c757d; margin-bottom: 5px; }
+        .field-value { background: white; border: 1px solid #ced4da; border-radius: 4px; padding: 10px; font-family: monospace; font-size: 12px; word-break: break-all; }
+        .copy-btn { background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-top: 5px; font-size: 12px; }
+        .copy-btn:hover { background: #0056b3; }
+        .test-btn { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px 5px; }
+        .test-btn:hover { background: #218838; }
+        .nav-links { text-align: center; margin-bottom: 30px; }
+        .nav-links a { color: #007bff; text-decoration: none; margin: 0 15px; padding: 8px 16px; border: 1px solid #007bff; border-radius: 20px; }
+        .nav-links a:hover { background: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <h1>🔐 Chaotic ECC Decryption Simulation Examples</h1>
+    
+    <div class="nav-links">
+        <a href="simulation-examples.html">📋 Examples</a>
+        <a href="decrypt.html">🔓 Decrypt</a>
+        <a href="encrypt.html">🔒 Encrypt</a>
+        <a href="demo.html">🏠 Demo</a>
+    </div>
+
+    <p style="background: #d1ecf1; padding: 15px; border-radius: 5px; color: #0c5460;">
+        <strong>Note:</strong> These are simulation examples that demonstrate the decryption interface and process flow. 
+        The decryption will always succeed and show realistic output for demonstration purposes.
+    </p>
+
+    <!-- Example 1: Basic Message -->
+    <div class="example-card">
+        <div class="example-title">📝 Example 1: Basic Encrypted Message</div>
+        
+        <div class="field-group">
+            <div class="field-label">Private Key (Hex):</div>
+            <div class="field-value" id="example1-private">0xa1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456</div>
+            <button class="copy-btn" onclick="copyField('example1-private')">Copy</button>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-label">Sender's Public Key (Hex):</div>
+            <div class="field-value" id="example1-public">0x04f1e2d3c4b5a69788796a5b4c3d2e1f09e8d7c6b5a49382716f5e4d3c2b1a09f8e7d6c5b4a39281706f5e4d3c2b1a098765432109876543210fedcba9876543210</div>
+            <button class="copy-btn" onclick="copyField('example1-public')">Copy</button>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-label">Encrypted Data (JSON):</div>
+            <div class="field-value" id="example1-data">{
+  "iv": "a1b2c3d4e5f67890abcdef12",
+  "ct": "8f7e6d5c4b3a29180f1e2d3c4b5a69788796a5b4c3d2e1f09e8d7c6b5a49382716f5e4d3c2b1a09f8e7d6c5b4a39281706f5e4d3c2b1a0987654321098765432",
+  "tag": "9f8e7d6c5b4a3928170615f4",
+  "metadata": {
+    "timestamp": "2024-01-23T10:30:00Z",
+    "type": "personal_message",
+    "sender": "alice",
+    "recipient": "bob"
+  },
+  "timestamp": "2024-01-23T10:30:15.123Z"
+}</div>
+            <button class="copy-btn" onclick="copyField('example1-data')">Copy</button>
+        </div>
+        
+        <button class="test-btn" onclick="testExample(1)">🧪 Test This Example</button>
+    </div>
+
+    <!-- Example 2: Business Document -->
+    <div class="example-card">
+        <div class="example-title">📄 Example 2: Encrypted Business Document</div>
+        
+        <div class="field-group">
+            <div class="field-label">Private Key (Hex):</div>
+            <div class="field-value" id="example2-private">0x1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809</div>
+            <button class="copy-btn" onclick="copyField('example2-private')">Copy</button>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-label">Sender's Public Key (Hex):</div>
+            <div class="field-value" id="example2-public">0x04c1d2e3f4a5b69788796a5b4c3d2e1f09e8d7c6b5a49382716f5e4d3c2b1a09f8e7d6c5b4a39281706f5e4d3c2b1a098765432109876543210fedcba9876543210</div>
+            <button class="copy-btn" onclick="copyField('example2-public')">Copy</button>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-label">Encrypted Data (JSON):</div>
+            <div class="field-value" id="example2-data">{
+  "iv": "f1e2d3c4b5a69788796a5b4c",
+  "ct": "3d2e1f09e8d7c6b5a49382716f5e4d3c2b1a09f8e7d6c5b4a39281706f5e4d3c2b1a098765432109876543210fedcba9876543210abcdef1234567890",
+  "tag": "abcdef1234567890fedcba98",
+  "metadata": {
+    "timestamp": "2024-01-23T15:45:30Z",
+    "type": "business_document",
+    "classification": "confidential",
+    "department": "finance",
+    "version": "1.0"
+  },
+  "aad": "7b2274696d657374616d70223a22323032342d30312d32335431353a34353a33305a222c2274797065223a22627573696e6573735f646f63756d656e74227d",
+  "timestamp": "2024-01-23T15:45:45.456Z"
+}</div>
+            <button class="copy-btn" onclick="copyField('example2-data')">Copy</button>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-label">Seed Secret (Hex) - Optional:</div>
+            <div class="field-value" id="example2-seed">0xabcdef1234567890fedcba9876543210abcdef1234567890fedcba9876543210</div>
+            <button class="copy-btn" onclick="copyField('example2-seed')">Copy</button>
+        </div>
+        
+        <button class="test-btn" onclick="testExample(2)">🧪 Test This Example</button>
+    </div>
+
+    <!-- Example 3: Medical Record -->
+    <div class="example-card">
+        <div class="example-title">🏥 Example 3: Encrypted Medical Record</div>
+        
+        <div class="field-group">
+            <div class="field-label">Private Key (Hex):</div>
+            <div class="field-value" id="example3-private">0x9f8e7d6c5b4a39281706f5e4d3c2b1a098765432109876543210fedcba987654321</div>
+            <button class="copy-btn" onclick="copyField('example3-private')">Copy</button>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-label">Sender's Public Key (Hex):</div>
+            <div class="field-value" id="example3-public">0x04d1e2f3a4b5c69788796a5b4c3d2e1f09e8d7c6b5a49382716f5e4d3c2b1a09f8e7d6c5b4a39281706f5e4d3c2b1a098765432109876543210fedcba9876543210</div>
+            <button class="copy-btn" onclick="copyField('example3-public')">Copy</button>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-label">Encrypted Data (JSON):</div>
+            <div class="field-value" id="example3-data">{
+  "iv": "123456789abcdef0123456789abcdef0",
+  "ct": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789fedcba9876543210fedcba9876543210",
+  "tag": "fedcba9876543210fedcba98",
+  "metadata": {
+    "timestamp": "2024-01-23T09:15:00Z",
+    "type": "medical_record",
+    "patient_id": "P-2024-001",
+    "doctor": "Dr. Smith",
+    "classification": "highly_confidential",
+    "department": "cardiology"
+  },
+  "aad": "7b2274696d657374616d70223a22323032342d30312d32335430393a31353a30305a222c2274797065223a226d65646963616c5f7265636f7264227d",
+  "timestamp": "2024-01-23T09:15:30.789Z",
+  "chaoticFingerprint": "3f2e1d0c9b8a7968574635241302f1e0d9c8b7a695847362514039281706f5e4"
+}</div>
+            <button class="copy-btn" onclick="copyField('example3-data')">Copy</button>
+        </div>
+        
+        <div class="field-group">
+            <div class="field-label">Seed Secret (Hex) - Optional:</div>
+            <div class="field-value" id="example3-seed">0x456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef012345</div>
+            <button class="copy-btn" onclick="copyField('example3-seed')">Copy</button>
+        </div>
+        
+        <button class="test-btn" onclick="testExample(3)">🧪 Test This Example</button>
+    </div>
+
+    <div style="background: #e2e3e5; padding: 20px; border-radius: 8px; margin-top: 30px;">
+        <h3>🚀 How to Use These Examples:</h3>
+        <ol>
+            <li><strong>Copy the data:</strong> Click the "Copy" buttons to copy individual fields</li>
+            <li><strong>Open decryption form:</strong> Go to the <a href="decrypt.html">decryption page</a></li>
+            <li><strong>Paste the values:</strong> Fill in the form with the copied data</li>
+            <li><strong>Click decrypt:</strong> The simulation will show the decryption process</li>
+            <li><strong>View results:</strong> See the simulated decrypted content and chaotic fingerprint verification</li>
+        </ol>
+        
+        <p><strong>Expected Result:</strong> All examples will successfully "decrypt" and show detailed information about the process, including chaotic fingerprint verification if a seed secret is provided.</p>
+    </div>
+
+    <script>
+        function copyField(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = element.nextElementSibling;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#007bff';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy to clipboard');
+            });
+        }
+
+        function testExample(exampleNum) {
+            const privateKey = document.getElementById(`example${exampleNum}-private`).textContent;
+            const publicKey = document.getElementById(`example${exampleNum}-public`).textContent;
+            const encryptedData = document.getElementById(`example${exampleNum}-data`).textContent;
+            const seedElement = document.getElementById(`example${exampleNum}-seed`);
+            const seedSecret = seedElement ? seedElement.textContent : '';
+
+            // Create URL with parameters
+            const params = new URLSearchParams({
+                privateKey: privateKey,
+                publicKey: publicKey,
+                encryptedData: encryptedData,
+                seedSecret: seedSecret
+            });
+
+            // Open decrypt page with pre-filled data
+            window.open(`decrypt.html?${params.toString()}`, '_blank');
+        }
+    </script>
+</body>
+</html>

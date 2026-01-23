@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaotic ECC Decryption</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="plugins/icons/font-awesome/css/all.min.css">
+    <link rel="stylesheet" href="plugins/toastr/toastr.min.css">
+    <style>
+        .decrypt-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .decrypt-form {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .decrypt-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .decrypt-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .decrypt-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .result-content {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            word-break: break-all;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid #f5c6cb;
+            margin-top: 15px;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid #c3e6cb;
+            margin-top: 15px;
+        }
+        
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #218838;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-display {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border: 2px dashed #e1e5e9;
+            border-radius: 8px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-display:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .file-icon {
+            margin-right: 10px;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="decrypt-container">
+        <div class="nav-links" style="text-align: center; margin-bottom: 20px;">
+            <a href="encrypt.html" style="color: white; text-decoration: none; margin: 0 15px; padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.2); transition: all 0.3s ease;">
+                <i class="fas fa-lock"></i> Encrypt
+            </a>
+            <a href="decrypt.html" style="color: white; text-decoration: none; margin: 0 15px; padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.3); transition: all 0.3s ease;">
+                <i class="fas fa-unlock"></i> Decrypt
+            </a>
+        </div>
+        
+        <div class="decrypt-form">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">
+                <i class="fas fa-unlock-alt" style="margin-right: 10px; color: #667eea;"></i>
+                Chaotic ECC Decryption
+            </h2>
+            
+            <form id="decryptForm">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-key" style="margin-right: 5px;"></i>
+                        Private Key (Hex)
+                    </label>
+                    <input type="text" id="privateKey" class="form-input" 
+                           placeholder="Enter your private key (64 hex characters)" 
+                           maxlength="66" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-users" style="margin-right: 5px;"></i>
+                        Sender's Public Key (Hex)
+                    </label>
+                    <input type="text" id="senderPublicKey" class="form-input" 
+                           placeholder="Enter sender's public key" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-file-code" style="margin-right: 5px;"></i>
+                        Encrypted Data (JSON)
+                    </label>
+                    <textarea id="encryptedData" class="form-textarea" 
+                              placeholder='{"iv": "...", "ct": "...", "tag": "...", "metadata": {...}}' 
+                              required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-fingerprint" style="margin-right: 5px;"></i>
+                        Seed Secret (Hex) - Optional
+                    </label>
+                    <input type="text" id="seedSecret" class="form-input" 
+                           placeholder="Enter seed secret for chaotic fingerprint verification">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-upload" style="margin-right: 5px;"></i>
+                        Or Upload Encrypted File
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="encryptedFile" class="file-input" accept=".json,.txt">
+                        <div class="file-input-display">
+                            <i class="fas fa-cloud-upload-alt file-icon"></i>
+                            <span id="fileDisplayText">Click to select encrypted file</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="decrypt-btn" id="decryptBtn">
+                    <i class="fas fa-unlock" style="margin-right: 8px;"></i>
+                    Decrypt Data
+                </button>
+            </form>
+            
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; color: #666;">Decrypting...</p>
+            </div>
+            
+            <div id="resultSection" class="result-section" style="display: none;">
+                <div class="result-label">
+                    <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>
+                    Decrypted Content:
+                </div>
+                <div id="decryptedContent" class="result-content"></div>
+                <button class="copy-btn" onclick="copyToClipboard('decryptedContent')">
+                    <i class="fas fa-copy" style="margin-right: 5px;"></i>
+                    Copy Result
+                </button>
+            </div>
+            
+            <div id="fingerprintSection" class="result-section" style="display: none;">
+                <div class="result-label">
+                    <i class="fas fa-fingerprint" style="color: #17a2b8; margin-right: 5px;"></i>
+                    Chaotic Fingerprint Verification:
+                </div>
+                <div id="fingerprintResult" class="result-content"></div>
+            </div>
+            
+            <div id="messageArea"></div>
+        </div>
+    </div>
+
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="plugins/toastr/toastr.min.js"></script>
+    <script src="js/decrypt.js"></script>
+</body>
+</html>

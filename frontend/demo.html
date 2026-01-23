@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaotic ECC Demo</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="plugins/icons/font-awesome/css/all.min.css">
+    <style>
+        .demo-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .demo-content {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .nav-links {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .demo-section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #4facfe;
+        }
+        
+        .demo-title {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .demo-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            color: #4facfe;
+            margin-bottom: 20px;
+        }
+        
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .feature-description {
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .step-list li {
+            background: white;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .step-number {
+            background: #4facfe;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .cta-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 10px;
+            color: white;
+        }
+        
+        .cta-button {
+            background: white;
+            color: #4facfe;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="nav-links">
+            <a href="demo.html">
+                <i class="fas fa-home"></i> Demo
+            </a>
+            <a href="encrypt.html">
+                <i class="fas fa-lock"></i> Encrypt
+            </a>
+            <a href="decrypt.html">
+                <i class="fas fa-unlock"></i> Decrypt
+            </a>
+        </div>
+        
+        <div class="demo-content">
+            <h1 style="text-align: center; color: #333; margin-bottom: 20px;">
+                <i class="fas fa-shield-alt" style="color: #4facfe; margin-right: 15px;"></i>
+                Chaotic ECC Encryption System
+            </h1>
+            
+            <p style="text-align: center; color: #666; font-size: 18px; margin-bottom: 40px;">
+                A secure encryption system combining Elliptic Curve Cryptography with chaotic fingerprinting for enhanced security
+            </p>
+            
+            <div class="demo-section">
+                <h2 class="demo-title">
+                    <i class="fas fa-info-circle" style="color: #4facfe; margin-right: 10px;"></i>
+                    What is Chaotic ECC?
+                </h2>
+                <p class="demo-description">
+                    Chaotic ECC combines traditional Elliptic Curve Cryptography with chaotic systems to create unique fingerprints 
+                    for data integrity verification. This system uses the logistic map, a well-known chaotic function, to generate 
+                    deterministic but unpredictable sequences that serve as cryptographic fingerprints.
+                </p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <h3 class="feature-title">ECDH Key Exchange</h3>
+                        <p class="feature-description">
+                            Secure key derivation using Elliptic Curve Diffie-Hellman for establishing shared secrets between parties.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3 class="feature-title">AES-GCM Encryption</h3>
+                        <p class="feature-description">
+                            Industry-standard AES-256-GCM encryption providing both confidentiality and authenticity of data.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-fingerprint"></i>
+                        </div>
+                        <h3 class="feature-title">Chaotic Fingerprinting</h3>
+                        <p class="feature-description">
+                            Unique fingerprints generated using chaotic logistic maps for enhanced metadata verification.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h2 class="demo-title">
+                    <i class="fas fa-cogs" style="color: #4facfe; margin-right: 10px;"></i>
+                    How It Works
+                </h2>
+                
+                <ul class="step-list">
+                    <li>
+                        <span class="step-number">1</span>
+                        <strong>Key Generation:</strong> Generate or provide ECC private/public key pairs for encryption parties.
+                    </li>
+                    <li>
+                        <span class="step-number">2</span>
+                        <strong>Shared Secret:</strong> Use ECDH to derive a shared encryption key from your private key and recipient's public key.
+                    </li>
+                    <li>
+                        <span class="step-number">3</span>
+                        <strong>Encryption:</strong> Encrypt the message using AES-256-GCM with the derived shared key.
+                    </li>
+                    <li>
+                        <span class="step-number">4</span>
+                        <strong>Chaotic Fingerprint:</strong> Generate a unique fingerprint using chaotic logistic maps for metadata verification.
+                    </li>
+                    <li>
+                        <span class="step-number">5</span>
+                        <strong>Decryption:</strong> Reverse the process using the recipient's private key and sender's public key.
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="demo-section">
+                <h2 class="demo-title">
+                    <i class="fas fa-code" style="color: #4facfe; margin-right: 10px;"></i>
+                    Example Usage
+                </h2>
+                
+                <h4>Encryption Process:</h4>
+                <div class="code-example">
+{
+  "privateKey": "0x1234567890abcdef...",
+  "recipientPublicKey": "0xabcdef1234567890...",
+  "message": "Hello, secure world!",
+  "metadata": {
+    "timestamp": "2024-01-23T10:30:00Z",
+    "type": "message"
+  },
+  "seedSecret": "0xfedcba0987654321..."
+}
+                </div>
+                
+                <h4>Encrypted Output:</h4>
+                <div class="code-example">
+{
+  "iv": "a1b2c3d4e5f6789012345678",
+  "ct": "encrypted_ciphertext_here...",
+  "tag": "authentication_tag_here...",
+  "metadata": {
+    "timestamp": "2024-01-23T10:30:00Z",
+    "type": "message"
+  },
+  "chaoticFingerprint": "fingerprint_hash_here...",
+  "timestamp": "2024-01-23T10:30:00.123Z"
+}
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h2 class="demo-title">
+                    <i class="fas fa-shield-alt" style="color: #4facfe; margin-right: 10px;"></i>
+                    Security Features
+                </h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-secret"></i>
+                        </div>
+                        <h3 class="feature-title">Forward Secrecy</h3>
+                        <p class="feature-description">
+                            Each encryption uses unique session keys, ensuring past communications remain secure even if keys are compromised.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <h3 class="feature-title">Authenticated Encryption</h3>
+                        <p class="feature-description">
+                            AES-GCM provides both encryption and authentication, preventing tampering and ensuring data integrity.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-random"></i>
+                        </div>
+                        <h3 class="feature-title">Chaotic Verification</h3>
+                        <p class="feature-description">
+                            Chaotic fingerprints provide an additional layer of verification that's computationally difficult to forge.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cta-section">
+                <h2 style="margin-bottom: 20px;">Ready to Try It?</h2>
+                <p style="margin-bottom: 30px; opacity: 0.9;">
+                    Experience secure encryption with chaotic fingerprinting technology
+                </p>
+                <a href="encrypt.html" class="cta-button">
+                    <i class="fas fa-lock" style="margin-right: 8px;"></i>
+                    Start Encrypting
+                </a>
+                <a href="decrypt.html" class="cta-button">
+                    <i class="fas fa-unlock" style="margin-right: 8px;"></i>
+                    Decrypt Data
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

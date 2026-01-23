@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Test Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .result { background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .code { font-family: monospace; background: #e8e8e8; padding: 10px; border-radius: 3px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Test Data for Chaotic ECC</h1>
+        <button onclick="generateTestData()">Generate Test Data</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function generateTestData() {
+            // Generate test keys
+            const privateKey = '0x' + Array.from(crypto.getRandomValues(new Uint8Array(32)))
+                .map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            const publicKey = '0x' + Array.from(crypto.getRandomValues(new Uint8Array(64)))
+                .map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            const seedSecret = '0x' + Array.from(crypto.getRandomValues(new Uint8Array(32)))
+                .map(b => b.toString(16).padStart(2, '0')).join('');
+
+            // Test message
+            const message = "Hello, this is a test message for Chaotic ECC decryption!";
+            
+            // Test metadata
+            const metadata = {
+                timestamp: new Date().toISOString(),
+                type: "test_message",
+                sender: "alice",
+                recipient: "bob"
+            };
+
+            try {
+                // Encrypt the message
+                const encryptedData = await encryptMessage(privateKey, publicKey, message, metadata, seedSecret);
+                
+                // Display results
+                displayResults(privateKey, publicKey, seedSecret, encryptedData, message);
+                
+            } catch (error) {
+                document.getElementById('results').innerHTML = `<div class="result"><strong>Error:</strong> ${error.message}</div>`;
+            }
+        }
+
+        async function encryptMessage(privateKeyHex, publicKeyHex, message, metadata, seedSecret) {
+            // Derive shared key
+            const sharedKey = await deriveSharedKey(privateKeyHex, publicKeyHex);
+            
+            // Convert message to buffer
+            const messageBuffer = new TextEncoder().encode(message);
+            
+            // Prepare AAD
+            const aad = new TextEncoder().encode(JSON.stringify(metadata));
+            
+            // Encrypt
+            const result = await aesGcmEncrypt(sharedKey, messageBuffer, aad);
+            
+            // Generate chaotic fingerprint
+            const fingerprint = await generateChaoticFingerprint(metadata, seedSecret);
+            
+            return {
+                iv: result.iv,
+                ct: result.ct,
+                tag: result.tag,
+                metadata: metadata,
+                aad: bufferToHex(aad),
+                timestamp: new Date().toISOString(),
+                chaoticFingerprint: fingerprint
+            };
+        }
+
+        async function deriveSharedKey(privateKeyHex, publicKeyHex) {
+            const privateKey = privateKeyHex.replace(/^0x/, '');
+            const publicKey = publicKeyHex.replace(/^0x/, '');
+            const combined = privateKey + publicKey;
+            const encoder = new TextEncoder();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(combined));
+            
+            return await crypto.subtle.importKey(
+                'raw',
+                hashBuffer,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['encrypt']
+            );
+        }
+
+        async function aesGcmEncrypt(key, plaintextBuffer, aad = null) {
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            
+            const encryptedBuffer = await crypto.subtle.encrypt(
+                {
+                    name: 'AES-GCM',
+                    iv: iv,
+                    additionalData: aad,
+                    tagLength: 128
+                },
+                key,
+                plaintextBuffer
+            );
+
+            const encrypted = new Uint8Array(encryptedBuffer);
+            const ciphertext = encrypted.slice(0, -16);
+            const tag = encrypted.slice(-16);
+
+            return {
+                iv: bufferToHex(iv),
+                ct: bufferToHex(ciphertext),
+                tag: bufferToHex(tag)
+            };
+        }
+
+        async function generateChaoticFingerprint(metadataJson, seedSecretHex) {
+            const encoder = new TextEncoder();
+            const metadataStr = JSON.stringify(metadataJson);
+            const seedBuffer = hexToBuffer(seedSecretHex.replace(/^0x/, ''));
+            
+            const hashBuffer = await crypto.subtle.digest('SHA-256', 
+                new Uint8Array([...encoder.encode(metadataStr), ...seedBuffer])
+            );
+            
+            const x0 = seedToUnit(new Uint8Array(hashBuffer));
+            const sequence = logisticIteration(x0, 3.99, 16);
+            const quantized = quantizeSequence(sequence);
+            
+            const finalHashBuffer = await crypto.subtle.digest('SHA-256', 
+                new Uint8Array([...quantized, ...encoder.encode(metadataStr)])
+            );
+            
+            return bufferToHex(new Uint8Array(finalHashBuffer));
+        }
+
+        function seedToUnit(seedBuffer) {
+            let value = 0;
+            for (let i = 0; i < Math.min(8, seedBuffer.length); i++) {
+                value = value * 256 + seedBuffer[i];
+            }
+            return (value % 1000000000000) / 1000000000000;
+        }
+
+        function logisticIteration(x0, r = 3.99, k = 16) {
+            let x = x0;
+            const sequence = [];
+            for (let i = 0; i < k; i++) {
+                x = r * x * (1 - x);
+                sequence.push(x);
+            }
+            return sequence;
+        }
+
+        function quantizeSequence(sequence) {
+            const result = new Uint8Array(sequence.length * 4);
+            let offset = 0;
+            
+            for (const x of sequence) {
+                const val = Math.floor(x * (2 ** 32)) >>> 0;
+                result[offset++] = (val >>> 24) & 0xFF;
+                result[offset++] = (val >>> 16) & 0xFF;
+                result[offset++] = (val >>> 8) & 0xFF;
+                result[offset++] = val & 0xFF;
+            }
+            
+            return result;
+        }
+
+        function hexToBuffer(hex) {
+            const cleanHex = hex.replace(/^0x/, '');
+            const bytes = new Uint8Array(cleanHex.length / 2);
+            for (let i = 0; i < cleanHex.length; i += 2) {
+                bytes[i / 2] = parseInt(cleanHex.substr(i, 2), 16);
+            }
+            return bytes;
+        }
+
+        function bufferToHex(buffer) {
+            return Array.from(buffer)
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        function displayResults(privateKey, publicKey, seedSecret, encryptedData, originalMessage) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="result">
+                    <h3>Generated Test Data</h3>
+                    <p><strong>Original Message:</strong> "${originalMessage}"</p>
+                </div>
+                
+                <div class="result">
+                    <h4>Private Key (Hex):</h4>
+                    <div class="code">${privateKey}</div>
+                </div>
+                
+                <div class="result">
+                    <h4>Sender's Public Key (Hex):</h4>
+                    <div class="code">${publicKey}</div>
+                </div>
+                
+                <div class="result">
+                    <h4>Encrypted Data (JSON):</h4>
+                    <div class="code">${JSON.stringify(encryptedData, null, 2)}</div>
+                </div>
+                
+                <div class="result">
+                    <h4>Seed Secret (Hex):</h4>
+                    <div class="code">${seedSecret}</div>
+                </div>
+                
+                <div class="result">
+                    <p><strong>Instructions:</strong></p>
+                    <ol>
+                        <li>Copy the Private Key and paste it into the decryption form</li>
+                        <li>Copy the Sender's Public Key and paste it into the decryption form</li>
+                        <li>Copy the entire Encrypted Data JSON and paste it into the decryption form</li>
+                        <li>Copy the Seed Secret and paste it into the decryption form (optional)</li>
+                        <li>Click "Decrypt Data" - it should decrypt to: "${originalMessage}"</li>
+                    </ol>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
